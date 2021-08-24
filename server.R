@@ -3,41 +3,49 @@ server <- function(input, output) {
     scenario_data %>% filter(scenario == toupper(input$Scenario)) 
   })
   
-  output$actions_plot <- renderPlotly({
-      gg <- selected_scenario() %>% 
-        filter(units_of_effort > 0) %>%
-        ggplot(aes(year, units_of_effort, fill = action_type)) +
-        geom_col() +
-        labs(x = "Year", 
-             y = "Units of Effort", 
-             title = paste0("Scenario ", input$Scenario)) +
-        scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5)) +
-        scale_fill_manual(values =  c("#00A08A", "#5BBCD6","#F2AD00", "#FF0000")) +
-        facet_wrap(~watershed, ncol = 1) +
-        theme_minimal() 
-      
-      height <- ifelse(input$Scenario %in% c("Eleven", "Nine"), 900, 600) # TODO figure out height of plot 9 and 11
-      ggplotly(gg) %>% layout(height = height, width = 900)
+  output$cumulative_acres_plot <- renderPlotly({
+    watersheds_with_actions <- selected_scenario() %>%
+      filter(units_of_effort > 0) %>% 
+      pull(watershed) %>% 
+      unique()
+    print(watersheds_with_actions)
+    plot_data <- selected_scenario() %>%
+      mutate(action_amount = case_when(
+        action_type == "survival" ~ .5 * units_of_effort,
+        action_type == "spawn" ~ units_of_effort,
+        action_type == "inchannel" ~ 2 * units_of_effort,
+        action_type == "floodplain" ~ 3 * units_of_effort)) %>% 
+      group_by(watershed, action_type) %>% 
+      summarise(total_action_amount = sum(action_amount),
+                total_effort = sum(units_of_effort)) %>% 
+      ungroup() %>% 
+      filter(watershed %in% watersheds_with_actions)
+    View(plot_data)
+    plot_data %>% 
+      plot_ly(y = ~watershed, x = ~total_effort, color = ~action_type, type = "bar",
+              legendgroup = ~action_type, orientation = 'h',
+              colors = pal) 
   })
   
-  output$cumulative_acres_plot <- renderPlotly({
-      plot_data <- selected_scenario() %>% 
-        filter(units_of_effort > 0) %>%
-        mutate(acres = ifelse(action_type == "survival", .5 * units_of_effort, 2 * units_of_effort))
-      
-      gg <- plot_data %>% 
-        ggplot(aes(x = watershed, y = acres)) + 
-        geom_col(aes(fill = action_type)) + 
-        labs(x = "Watershed",
-             y = "Total Acres",
-             title = paste0("Scenario ", input$Scenario)) +
-        coord_flip() +
-        scale_fill_manual(values =  c("#00A08A", "#5BBCD6","#F2AD00", "#FF0000")) +
-        theme_minimal()
-      
-      height <- 600
+  output$watershed_input_ui <- renderUI({
+     option <- selected_scenario() %>%
+      filter(units_of_effort > 0) %>% 
+      pull(watershed) %>% 
+      unique()
     
-    ggplotly(gg) %>% layout(height = height, width = 900)
+    selectInput('watershed', label = 'Select Watershed', 
+                choices = option)
+  })
+  
+  output$Watershed_graph <- renderPlotly({
+    d <- selected_scenario() %>% 
+      filter(watershed == "Upper Sacramento River")
+    
+    d %>% 
+      plot_ly(x = ~year, y = ~units_of_effort, color = ~action_type, 
+              colors = c("#00A08A", "#5BBCD6","#F2AD00", "#FF0000"),
+              type = "bar")
+    
   })
   
   output$text <- renderUI({

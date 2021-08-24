@@ -10,7 +10,7 @@ library(DT)
 # Load scenario dataframe
 scenario_data <- read_rds('data/scenario_data.rds')
 colors <- c("#85D4E3", "#F4B5BD", "#9C964A", "#CDC08C", "#FAD77B")
-
+pal <-  c("#00A08A", "#5BBCD6","#F2AD00", "#FF0000")
 # TODO fix these to reflect new names/descriptions (Need 13)
 descriptions <- c(
   "Restoration limited to in-channel Upper Sacramento, Butte, Lower Mid Sac, Feather, American, Deer, Battle. and Stanislaus",
