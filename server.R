@@ -14,7 +14,7 @@ server <- function(input, output) {
     plot_data <- selected_scenario() %>%
       mutate(
         action_amount = case_when(
-        action_type == "survival" ~ .5 * units_of_effort,
+        action_type == "survival" ~ .05 * units_of_effort,
         action_type == "spawn" ~ units_of_effort,
         action_type == "inchannel" ~ 2 * units_of_effort,
         action_type == "floodplain" ~ 3 * units_of_effort)) %>% 
@@ -24,18 +24,26 @@ server <- function(input, output) {
       ungroup() %>% 
       filter(total_action_amount > 0) %>%
       mutate(watershed = as.character(watershed),
-             action_type = factor(action_type, levels = c("floodplain", "inchannel", "spawn", "survival")))
-    View(plot_data)
+             action_type = factor(action_type, 
+                                  levels = c("floodplain", "inchannel", "spawn", "survival")),
+             total_action_amount = ifelse(action_type == "survival", 
+                                          round(total_action_amount * 100, 2), 
+                                          total_action_amount),
+             label = ifelse(action_type == "survival", 
+                            paste0(total_action_amount, "% increase"), 
+                            paste(total_action_amount, "acres")))
     
     plot_data %>% 
       plot_ly(y = ~watershed, x = ~total_effort, color = ~action_type, type = "bar",
               legendgroup = ~action_type, orientation = 'h', 
-              # text = ~label,
-              # colors = pal,
-              hovertemplate = paste('%{label}: %{x}')) %>% 
+              hoverinfo = 'text',
+              text = ~paste("Units of Effort:",total_effort,
+                            "</br></br>Total Added:", label)) %>% 
       layout(yaxis = list(title = list(text ='')),
-             xaxis = list(title = list(text ='Total Effort')),
-             showlegend = TRUE)
+             xaxis = list(title = list(text ='')),
+             showlegend = TRUE, barmode = 'stack',
+             legend = list(orientation = 'h')) %>% 
+      config(displayModeBar = FALSE)
   })
   
   output$watershed_input_ui <- renderUI({
@@ -50,18 +58,23 @@ server <- function(input, output) {
   })
   
   output$Watershed_graph <- renderPlotly({
+    validate(need(
+      nrow(selected_scenario()) > 0, ""
+    ))
+    
     d <- selected_scenario() %>% 
       filter(watershed == input$watershed)
     
     d %>% 
       plot_ly(x = ~year, y = ~units_of_effort, color = ~action_type, 
-              # colors = c("#00A08A", "#5BBCD6","#F2AD00", "#FF0000"),
               type = "bar",
               hovertemplate = paste('Year: %{x}',
                                     '<br><b>Units of Effort </b>: %{y}<br>')) %>% 
       layout(yaxis = list(title = list(text ='Units of Effort')),
-             xaxis = list(title = list(text ='Year')),
-             width = 750, autosize=T)
+             xaxis = list(title = list(text ='')),
+             # width = 750, autosize = TRUE,
+             legend = list(orientation = 'h')) %>% 
+      config(displayModeBar = FALSE)
     
   })
   
