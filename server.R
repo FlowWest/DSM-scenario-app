@@ -31,7 +31,7 @@ server <- function(input, output) {
       plot_ly(y = ~watershed, x = ~total_effort, color = ~action_type, type = "bar",
               legendgroup = ~action_type, orientation = 'h', 
               # text = ~label,
-              colors = pal,
+              # colors = pal,
               hovertemplate = paste('%{label}: %{x}')) %>% 
       layout(yaxis = list(title = list(text ='')),
              xaxis = list(title = list(text ='Total Effort')),
@@ -55,7 +55,7 @@ server <- function(input, output) {
     
     d %>% 
       plot_ly(x = ~year, y = ~units_of_effort, color = ~action_type, 
-              colors = c("#00A08A", "#5BBCD6","#F2AD00", "#FF0000"),
+              # colors = c("#00A08A", "#5BBCD6","#F2AD00", "#FF0000"),
               type = "bar",
               hovertemplate = paste('Year: %{x}',
                                     '<br><b>Units of Effort </b>: %{y}<br>')) %>% 
