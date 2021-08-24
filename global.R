@@ -5,7 +5,7 @@ library(tidyverse)
 library(plotly)
 library(stringr)
 library(DT)
-# library(DSMscenario)
+library(DSMscenario)
 
 # Load scenario dataframe
 scenario_data <- read_rds('data/scenario_data.rds')
