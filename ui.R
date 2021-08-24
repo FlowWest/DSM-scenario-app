@@ -18,8 +18,8 @@ shinyUI(
         plotlyOutput("cumulative_acres_plot"), 
         tags$br(),
         htmlOutput("text"),
-        # tags$br(),
         tags$hr()),
+        tags$br(),
     ),
     fluidRow(
       column(
