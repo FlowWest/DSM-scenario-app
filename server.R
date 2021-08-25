@@ -9,7 +9,7 @@ server <- function(input, output) {
       pull(watershed) %>% 
       unique() %>% droplevels()
 
-    print(watersheds_with_actions)
+    # print(watersheds_with_actions)
     
     plot_data <- selected_scenario() %>%
       mutate(
