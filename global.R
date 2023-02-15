@@ -5,52 +5,56 @@ library(tidyverse)
 library(plotly)
 library(stringr)
 library(DT)
-library(DSMscenario)
+# library(DSMscenario)
 
 # Load scenario dataframe
 scenario_data <- read_rds('data/scenario_data.rds')
 colors <- c("#85D4E3", "#F4B5BD", "#9C964A", "#CDC08C", "#FAD77B")
 pal <-  c("#00A08A", "#5BBCD6","#F2AD00", "#FF0000")
+# TODO fix these to reflect new names/descriptions (Need 13)
+descriptions <- c(
+  "Restoration limited to in-channel Upper Sacramento, Butte, Lower Mid Sac, Feather, American, Deer, Battle. and Stanislaus",
+  "Restoration limited to in-channel Upper Sacramento, Butte, Lower Mid Sac, Feather, American, Deer, Clear, and Stanislaus",
+  "Restoration limited to in-channel Upper Sacramento, Butte, Lower Mid Sac, Feather, American, Mokelumne, Clear, and Stanislaus",
+  "Restoration limited to in-channel in Mainstem Sacramento only",
+  "Restoration limited to in-channel Upper Sac, Lower Mid Sac, Cow Creek and Clear",
+  "Restoration limited to in-channel Upper Sac, Lower Mid, and American with some maintenance in Clear and Butte",
+  "Restoration limited to floodplain Upper Sac, Upper Mid, Lower Mid, Lower Sac, and San Joaquin",
+  "Restoration optimized to increase Winter-run population every year (limited to locations where WR occur)",
+  "Restoration optimized to increase Spring-run population every year (limited to locations where SR occur)",
+  "Restoration limited to in-channel equally distributed between Upper Mid, Deer, Butte, Clear, Mill, Battle, Antelope",
+  "Restoration optimized to increase Fall-run population every year (one action in each diversity group)",
+  "Restoration optimized to increase Fall-run population every year (one action in each diversity group)",
+  "Restoration optimized to increase Fall-run population every year (actions limited to Upper Sac, Lower Sac, American, Stanislaus, and Mokelumne)"
+)
 
+scenario_names <- c('In-Channel Only - Urkov', 'In-Channel Only - Brown', 'In-Channel Only - Bilski', 
+           'In-Channel Only - Mainstem Sac', 'In-Channel Only - Berry', 'In-Channel Only - Peterson', 
+           'Floodplain Only - Mainstem Sac', 'Winter-run Optimized',
+           'Spring-run Optimized', 'Spring-run In-Channel - Philips',
+           'Fall-run Diversity Group Optimized', 'Fall-run Optimized - Beakes',
+           'Fall-run Optimized - Bilski')
 
-descriptions <- c('Juvenile perennial habitat restoration focused in upper and lower-mid Sac River; Butte, Deer and Battle Creeks; and the Stanislaus and Feather Rivers',
-                  'Juvenile perennial habitat restoration focused in upper and lower-mid Sac River; Butte, Deer and Clear Creeks; and the Stanislaus and Feather Rivers',
-                  'Juvenile perennial habitat restoration focused in upper and lower-mid Sac River; Butte and Clear Creeks;  and the Stanislaus, Mokelumne, and Feather Rivers',
-                  'Juvenile perennial habitat restoration focused in the mainstem Sac and San Joaquin Rivers',
-                  'Juvenile perennial habitat restoration focused in upper, upper-mid, and lower-mid Sac River and Cow and Clear Creeks',
-                  'Juvenile perennial habitat restoration focused in the upper and lower-mid Sac River; American River; and Clear Creeks with maintaining existing habitat in Clear and Butte Creeks and the Upper Sac River.',
-                  'Juvenile seasonally-inundated habitat restoration focused in the mainstem Sacramento and San Joaquin Rivers',
-                  'Optimal habitat restoration actions for winter run in the mainstem Sac with an emphasis on the Sac River below Red Bluff',
-                  'Optimal habitat restoration actions for spring run in the upper-mid and lower Sac River; Battle, Butte,  Clear, Deer, Mill, and Antelope Creeks;  and the Feather River with an emphasis on the Sac River and Battle, Butte, and  Clear Creeks',
-                  'Optimal habitat restoration actions for spring run in the upper-mid Sac River and Battle, Butte,  Clear, Deer, Mill, and Antelope Creeks;  and the Feather River equally allocated across tributaries',
-                  'Optimal habitat restoration actions for fall run with at least one action per year in a tributary in each diversity group',
-                  'Optimal habitat restoration actions for fall run in the upper and lower Sac River and the American, Stanislaus, and Calaveras Rivers equally allocated across tributaries',
-                  'Optimal habitat restoration actions for fall run in the upper and lower Sac River and the American, Stanislaus, and Mokelumne Rivers equally allocated across tributaries'
-                  
-                  )
-
-scenario_names <- c('Strategy One', 
-                    'Strategy Two', 
-                    'Strategy Three', 
-                    'Strategy Four', 
-                    'Strategy Five', 
-                    'Strategy Six', 
-                    'Strategy Seven', 
-                    'Strategy Eight', 
-                    'Strategy Nine', 
-                    'Strategy Ten', 
-                    'Strategy Eleven', 
-                    'Strategy Twelve', 
-                    'Strategy Thirteen')
-
-# percent_change <- tibble(
-#   `Scenario Name` = rep(scenario_names, 3), 
-#   `Description` = rep(descriptions, 3),
-#   `Natural Spawners` = paste0(round(runif(39) * 100), "%"),
-#   `Juvenile Biomass` = paste0(round(runif(39) * 100), "%"),
-#   `Run` = c(rep("Fall Run", 13), rep("Spring Run", 13), rep("Winter Run", 13))
+percent_change <- tibble(
+  `Scenario Name` = rep(scenario_names, 3), 
+  `Description` = rep(descriptions, 3),
+  `Natural Spawners` = paste0(round(runif(39) * 100), "%"),
+  `Juvenile Biomass` = paste0(round(runif(39) * 100), "%"),
+  `Run` = c(rep("Fall Run", 13), rep("Spring Run", 13), rep("Winter Run", 13))
+)
+# spring_percent_change <- tibble(
+#   # `Scenario Number ` = 1:13,
+#   `Scenario Name` = rep("Scenario X", 13), 
+#   `Natural Spawners` = paste0(round(runif(13) * 100), "%"),
+#   `Juvenile Biomass` = paste0(round(runif(13) * 100), "%")
 # )
-
+# winter_percent_change <- tibble(
+#   # `Scenario Number ` = 1:13,
+#   `Scenario Name` = rep("Scenario X", 13), 
+#   `Natural Spawners` = paste0(round(runif(13) * 100), "%"),
+#   `Juvenile Biomass` = paste0(round(runif(13) * 100), "%")
+# )
+# 
 scenario_numbers <- c('One', 'Two', 'Three',
                       'Four', 'Five', 'Six',
                       'Seven', 'Eight', 'Nine',
