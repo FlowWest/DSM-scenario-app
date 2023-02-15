@@ -25,7 +25,7 @@ server <- function(input, output) {
       filter(total_action_amount > 0) %>%
       mutate(watershed = as.character(watershed),
              action_type = factor(action_type, levels = c("floodplain", "inchannel", "spawn", "survival")))
-    View(plot_data)
+    # View(plot_data)
     
     plot_data %>% 
       plot_ly(y = ~watershed, x = ~total_effort, color = ~action_type, type = "bar",
